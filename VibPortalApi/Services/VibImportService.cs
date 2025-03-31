@@ -11,7 +11,7 @@ public interface IVibImportService
     Task<List<VibImport>> GetAllAsync();
     Task<VibImport?> GetByIdAsync(int id);
     Task<bool> UpdateAsync(VibImport record);
-    Task<(List<VibImport> Records, int TotalCount)> GetPagedAsync(int page, int pageSize, string sortColumn, string sortDirection, string? statusFilter, string? searchQuery);
+    Task<PagedResult<VibImport>> GetPagedAsync(int page, int pageSize, string sortColumn, string sortDirection, string? filter, string? status);
 }
 
 public class VibImportService : IVibImportService
@@ -89,46 +89,43 @@ public class VibImportService : IVibImportService
         return true;
     }
 
-    public async Task<(List<VibImport> Records, int TotalCount)> GetPagedAsync(
-        int page,
-        int pageSize,
-        string sortColumn,
-        string sortDirection,
-        string? statusFilter,
-        string? searchQuery)
+    public async Task<PagedResult<VibImport>> GetPagedAsync(int page, int pageSize, string sortColumn, string sortDirection, string? filter, string? status)
     {
-        var query = _context.VibImport.AsQueryable();
+        var query = _context.VibImport.AsNoTracking();
 
-        if (!string.IsNullOrWhiteSpace(statusFilter))
+        // 🔍 Apply filtering
+        if (!string.IsNullOrWhiteSpace(filter))
         {
-            query = query.Where(x => x.Status == statusFilter);
+            filter = filter.Trim().ToLower();
+
+            query = query.Where(v =>
+                v.SupplierNr.ToLower().Contains(filter) ||
+                v.Status.ToLower().Contains(filter) ||
+                v.H_Number.ToLower().Contains(filter) ||
+                v.EgNumber.ToLower().Contains(filter));
         }
-
-        if (!string.IsNullOrWhiteSpace(searchQuery))
+        if (!string.IsNullOrWhiteSpace(status))
         {
-            query = query.Where(x =>
-                x.SupplierNr.Contains(searchQuery) ||
-                x.Dimset.Contains(searchQuery) ||
-                x.Cas_Number.Contains(searchQuery) ||
-                x.Cas_Percentages.Contains(searchQuery) ||
-                x.FlashPoint.Contains(searchQuery));
+            query = query.Where(v => v.Status.ToLower() == status.ToLower());
+        }
+        // 🧠 Apply dynamic sorting
+        if (!string.IsNullOrWhiteSpace(sortColumn))
+        {
+            var orderBy = $"{sortColumn} {sortDirection}";
+            query = query.OrderBy(orderBy); // using System.Linq.Dynamic.Core
         }
 
         var totalCount = await query.CountAsync();
 
-        // Sorting with fallback
-        var orderString = $"{sortColumn} {sortDirection}";
-        if (string.IsNullOrWhiteSpace(sortColumn) || !typeof(VibImport).GetProperties().Any(p => p.Name.Equals(sortColumn, StringComparison.OrdinalIgnoreCase)))
-        {
-            orderString = "EntryDate desc";
-        }
-
-        var items = await query
-            .OrderBy(orderString)
+        var data = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
 
-        return (items, totalCount);
+        return new PagedResult<VibImport>
+        {
+            TotalCount = totalCount,
+            Data = data
+        };
     }
 }

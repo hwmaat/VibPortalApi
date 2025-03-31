@@ -47,9 +47,10 @@ namespace VibPortalApi.Controllers
         {
             return supplierId switch
             {
+                01270 => "gardobond",
                 1001 => "akzo",
                 1002 => "basf",
-                1003 => "beckers",
+                00520 => "beckers",
                 1004 => "brillux",
                 1005 => "kluthe",
                 1006 => "monopol",

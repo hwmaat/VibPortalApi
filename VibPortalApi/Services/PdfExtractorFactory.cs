@@ -13,6 +13,7 @@
         {
             return supplierCode.ToLowerInvariant() switch
             {
+                "gardobond" => _provider.GetRequiredService<PdfExtractor_Gardobond>(),
                 "akzo" => _provider.GetRequiredService<PdfExtractor_Akzo>(),
                 "basf" => _provider.GetRequiredService<PdfExtractor_Basf>(),
                 "beckers" => _provider.GetRequiredService<PdfExtractor_Beckers>(),
