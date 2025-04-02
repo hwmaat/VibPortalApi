@@ -32,11 +32,8 @@ namespace VibPortalApi.Services
                 Cas_Number = casNumbers,
                 Cas_Percentages = casPercentages,
                 FlashPoint = ExtractFlashPoint(text),
-
-                // The rest will be filled in later
                 SupplierNr = "",
                 Dimset = "",
-                EntryDate = DateTime.Now,
                 H_Number = hNumbers,
                 H_Cat = hCats,
                 Adr_Un_Nr = unNummer,
@@ -51,12 +48,10 @@ namespace VibPortalApi.Services
                 Imdg_PackagingGroup = Imdg_verpakkingsGroep,
                 Imdg_EnvironmentHazards = Imdg_milieugevaren,
                 Imdg_ExtraInfo = "",
-                ExtraInfoTunnelCode = "",
+                ExtraInfoTunnelCode = tunnelCode,
                 Ems_Fire = "",
                 Ems_Spillage = "",
-                UserName = "",
                 EgNumber = "",
-                Status = ""
             };
 
             return result;

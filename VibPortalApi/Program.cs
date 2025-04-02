@@ -29,7 +29,7 @@ builder.Services.AddSwaggerGen(c =>
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SQLserver")));
-
+builder.Services.AddScoped<IManageMsdsService, ManageMsdsService>();
 builder.Services.AddScoped<PdfExtractor_Akzo>();
 builder.Services.AddScoped<PdfExtractor_Basf>();
 builder.Services.AddScoped<PdfExtractor_Beckers>();
@@ -40,6 +40,14 @@ builder.Services.AddScoped<PdfExtractor_Ppg>();
 builder.Services.AddScoped<PdfExtractor_Valspar>();
 builder.Services.AddScoped<IPdfExtractorFactory, PdfExtractorFactory>();
 builder.Services.AddScoped<IVibImportService, VibImportService>();
+
+//builder.Services.AddHttpClient<IZenyaService, ZenyaService>();
+HttpClientHandler insecureHandler = new HttpClientHandler();
+insecureHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+builder.Services.AddHttpClient<IZenyaService, ZenyaService>()
+    .ConfigurePrimaryHttpMessageHandler(() => insecureHandler);
+
 
 var app = builder.Build();
 

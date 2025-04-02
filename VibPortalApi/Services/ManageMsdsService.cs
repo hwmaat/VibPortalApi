@@ -1,68 +1,82 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 using System.Text.RegularExpressions;
-using VibPortalApi.Dtos;
-using VibPortalApi.Services;
+using VibPortalApi.Data;
+using VibPortalApi.Models;
 
-namespace VibPortalApi.Controllers
+namespace VibPortalApi.Services
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class UploadController : ControllerBase
+    public class ManageMsdsService:IManageMsdsService
     {
-        private readonly IVibImportService _vibImportService;
-        private readonly IPdfExtractorFactory _pdfExtractorFactory;
+        private readonly AppDbContext _context;
 
-        public UploadController(
-            IVibImportService vibImportService,
-            IPdfExtractorFactory pdfExtractorFactory)
+        public ManageMsdsService(AppDbContext context)
         {
-            _vibImportService = vibImportService;
-            _pdfExtractorFactory = pdfExtractorFactory;
+            _context = context;
+
+        }
+        public async Task<List<VibImport>> GetAllAsync()
+        {
+            return await _context.VibImport.OrderByDescending(x => x.EntryDate).ToListAsync();
         }
 
-        [HttpPost("upload")]
-        public async Task<IActionResult> UploadPdf([FromForm] UploadRequest request)
+        public async Task<VibImport?> GetByIdAsync(int id)
         {
-            if (request.File == null || request.File.Length == 0)
-                return BadRequest("No PDF uploaded.");
+            return await _context.VibImport.FirstOrDefaultAsync(v => v.Id == id);
+        }
 
-            if (request.SupplierCode.IsNullOrEmpty())
-                return BadRequest("SupplierCode is required.");
+        public async Task<bool> UpdateAsync(VibImport record)
+        {
+            var existing = await _context.VibImport.FindAsync(record.Id);
+            if (existing == null)
+                return false;
 
-            var filePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + "_" + request.File.FileName);
-            await using (var stream = System.IO.File.Create(filePath))
+            _context.Entry(existing).CurrentValues.SetValues(record);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<PagedResult<VibImport>> GetPagedAsync(int page, int pageSize, string sortColumn, string sortDirection, string? filter, string? status)
+        {
+            var query = _context.VibImport.AsNoTracking();
+
+            // 🔍 Apply filtering
+            if (!string.IsNullOrWhiteSpace(filter))
             {
-                await request.File.CopyToAsync(stream);
+                filter = filter.Trim().ToLower();
+
+                query = query.Where(v =>
+                    v.SupplierNr.ToLower().Contains(filter) ||
+                    v.Status.ToLower().Contains(filter) ||
+                    v.H_Number.ToLower().Contains(filter) ||
+                    v.EgNumber.ToLower().Contains(filter));
+            }
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                query = query.Where(v => v.Status.ToLower() == status.ToLower());
+            }
+            // 🧠 Apply dynamic sorting
+            if (!string.IsNullOrWhiteSpace(sortColumn))
+            {
+                var orderBy = $"{sortColumn} {sortDirection}";
+                query = query.OrderBy(orderBy); // using System.Linq.Dynamic.Core
             }
 
-            var supplierNr = ParseFileName(request.File.FileName).SupplierCode;
-            var supplierName = ResolveSupplierCode(supplierNr);
-            
-            var result = await _vibImportService.ProcessPdfAsync(filePath, supplierName, supplierNr);
+            var totalCount = await query.CountAsync();
 
-            return result.Success ? Ok(result) : BadRequest(result.ErrorMessage);
-        }
+            var data = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
-        private string ResolveSupplierCode(string supplierCode)
-        {
-            return supplierCode switch
+            return new PagedResult<VibImport>
             {
-                "01270" => "gardobond",
-                "1001" => "akzo",
-                "1002" => "basf",
-                "00525" => "beckers",
-                "1004" => "brillux",
-                "1005" => "kluthe",
-                "1006" => "monopol",
-                "1007" => "ppg",
-                "1008" => "valspar",
-                _ => throw new NotSupportedException($"No extractor registered for supplier ID '{supplierCode}'")
+                TotalCount = totalCount,
+                Data = data
             };
         }
-        private (string SupplierCode, string Dimset, string Recipe) ParseFileName(string fname)
+
+        public (string SupplierCode, string Dimset, string Recipe) ParseFileName(string fname)
         {
             string fileName = fname;
             string supplierCode = "";
@@ -159,6 +173,5 @@ namespace VibPortalApi.Controllers
 
             return (supplierCode, dimset, recipe);
         }
-    
-}
+    }
 }

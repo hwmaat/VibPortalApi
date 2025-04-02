@@ -8,23 +8,23 @@ namespace VibPortalApi.Controllers
     [Route("api/[controller]")]
     public class ManageMsdsController : ControllerBase
     {
-        private readonly IVibImportService _vibImportService;
+        private readonly IManageMsdsService _manageMsdsService;
 
-        public ManageMsdsController(IVibImportService vibImportService)
+        public ManageMsdsController(IManageMsdsService manageMsdsService)
         {
-            _vibImportService = vibImportService;
+            _manageMsdsService = manageMsdsService;
         }
 
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
-            var items = await _vibImportService.GetAllAsync();
+            var items = await _manageMsdsService.GetAllAsync();
             return Ok(items);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var record = await _vibImportService.GetByIdAsync(id);
+            var record = await _manageMsdsService.GetByIdAsync(id);
             if (record == null)
             {
                 return NotFound();
@@ -38,7 +38,7 @@ namespace VibPortalApi.Controllers
             if (id != updated.Id)
                 return BadRequest("ID mismatch");
 
-            var result = await _vibImportService.UpdateAsync(updated);
+            var result = await _manageMsdsService.UpdateAsync(updated);
             if (!result)
                 return NotFound();
 
@@ -54,10 +54,21 @@ namespace VibPortalApi.Controllers
             [FromQuery] string? filter = null,
             [FromQuery] string? status = null)
         {
-            var result = await _vibImportService.GetPagedAsync(page, pageSize, sortColumn, sortDirection, filter, status);
+            var result = await _manageMsdsService.GetPagedAsync(page, pageSize, sortColumn, sortDirection, filter, status);
             return Ok(result);
         }
 
+        [HttpGet("parse-filename")]
+        public IActionResult ParseFileName([FromQuery] string fileName)
+        {
+            var (supplierCode, dimset, recipe) = _manageMsdsService.ParseFileName(fileName);
+            return Ok(new
+            {
+                SupplierCode = supplierCode,
+                Dimset = dimset,
+                Recipe = recipe
+            });
+        }
 
 
 

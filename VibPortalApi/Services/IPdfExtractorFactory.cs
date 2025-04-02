@@ -2,7 +2,7 @@
 {
     public interface IPdfExtractorFactory
     {
-        IPdfExtractorService GetExtractor(string supplierCode);
+        IPdfExtractorService GetExtractor(string filePath, string supplierCode);
     }
 
 }
