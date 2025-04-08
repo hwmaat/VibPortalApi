@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.Linq.Dynamic.Core;
 using VibPortalApi.Data;
 using VibPortalApi.Dtos;
@@ -19,7 +18,7 @@ public class VibImportService : IVibImportService
     }
 
     // === PDF Upload & Processing ===
-    public async Task<VibImportResult> ProcessPdfAsync(string filePath, string? supplierCode, string?  SupplierNr)
+    public async Task<VibImportResult> ProcessPdfAsync(string filePath, string? supplierCode, string?  Suppl_Nr)
     {
         var result = new VibImportResult();
 
@@ -35,12 +34,12 @@ public class VibImportService : IVibImportService
             var extractor = _pdfExtractorFactory.GetExtractor(filePath, supplierCode);
             var vib = extractor.ExtractData(filePath);
 
-            vib.EntryDate = DateTime.Now;
+            vib.Entry_Date = DateTime.Now;
             vib.UserName = "VibPortal";
             vib.Status = "Imported";
 
-            if (!string.IsNullOrWhiteSpace(SupplierNr))
-                vib.SupplierNr = SupplierNr;
+            if (!string.IsNullOrWhiteSpace(Suppl_Nr))
+                vib.Suppl_Nr = Suppl_Nr;
 
                 vib.Dimset = "test";
 

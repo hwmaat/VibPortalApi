@@ -8,7 +8,7 @@ namespace VibPortalApi.Services
         {
             return new VibImport
             {
-                EntryDate = DateTime.Now,
+                Entry_Date = DateTime.Now,
                 Status = "Imported"
             };
         }

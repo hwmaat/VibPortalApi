@@ -17,7 +17,7 @@ namespace VibPortalApi.Services
         }
         public async Task<List<VibImport>> GetAllAsync()
         {
-            return await _context.VibImport.OrderByDescending(x => x.EntryDate).ToListAsync();
+            return await _context.VibImport.OrderByDescending(x => x.Entry_Date).ToListAsync();
         }
 
         public async Task<VibImport?> GetByIdAsync(int id)
@@ -46,10 +46,10 @@ namespace VibPortalApi.Services
                 filter = filter.Trim().ToLower();
 
                 query = query.Where(v =>
-                    v.SupplierNr.ToLower().Contains(filter) ||
+                    v.Suppl_Nr.ToLower().Contains(filter) ||
                     v.Status.ToLower().Contains(filter) ||
-                    v.H_Number.ToLower().Contains(filter) ||
-                    v.EgNumber.ToLower().Contains(filter));
+                    v.H_Nr.ToLower().Contains(filter) ||
+                    v.Eg_Nr.ToLower().Contains(filter));
             }
             if (!string.IsNullOrWhiteSpace(status))
             {

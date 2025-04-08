@@ -49,7 +49,7 @@ namespace VibPortalApi.Controllers
         public async Task<ActionResult<PagedResult<VibImport>>> GetPaged(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 25,
-            [FromQuery] string sortColumn = "entryDate",
+            [FromQuery] string sortColumn = "Entry_Date",
             [FromQuery] string sortDirection = "desc",
             [FromQuery] string? filter = null,
             [FromQuery] string? status = null)

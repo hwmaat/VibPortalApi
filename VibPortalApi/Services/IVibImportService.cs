@@ -6,7 +6,7 @@ namespace VibPortalApi.Services
 {
     public interface IVibImportService
     {
-        Task<VibImportResult> ProcessPdfAsync(string filePath, string? supplierCode, string? SupplierNr);
+        Task<VibImportResult> ProcessPdfAsync(string filePath, string? supplierCode, string? Suppl_Nr);
 
     }
 }

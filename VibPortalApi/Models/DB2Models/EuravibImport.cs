@@ -1,13 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace VibPortalApi.Models
+﻿namespace VibPortalApi.Models.DB2Models
 {
-    public class VibImport
+    public class EuravibImport
     {
-        [Key]
-        public int Id { get; set; }
         public string? Suppl_Nr { get; set; }
         public string? Dimset { get; set; }
         public DateTime? Entry_Date { get; set; }
@@ -32,8 +26,7 @@ namespace VibPortalApi.Models
         public string? FlashPoint { get; set; }
         public string? Ems_Fire { get; set; }
         public string? Ems_Spillage { get; set; }
-        public string? UserName { get; set; }
+        public string? User { get; set; }
         public string? Eg_Nr { get; set; }
-        public string? Status { get; set; }
     }
 }

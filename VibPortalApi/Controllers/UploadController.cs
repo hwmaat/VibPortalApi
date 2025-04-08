@@ -38,10 +38,10 @@ namespace VibPortalApi.Controllers
                 await request.File.CopyToAsync(stream);
             }
 
-            var supplierNr = ParseFileName(request.File.FileName).SupplierCode;
-            var supplierName = ResolveSupplierCode(supplierNr);
+            var Suppl_Nr = ParseFileName(request.File.FileName).SupplierCode;
+            var supplierName = ResolveSupplierCode(Suppl_Nr);
             
-            var result = await _vibImportService.ProcessPdfAsync(filePath, supplierName, supplierNr);
+            var result = await _vibImportService.ProcessPdfAsync(filePath, supplierName, Suppl_Nr);
 
             return result.Success ? Ok(result) : BadRequest(result.ErrorMessage);
         }

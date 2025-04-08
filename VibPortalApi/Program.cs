@@ -1,3 +1,4 @@
+using IBM.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using VibPortalApi;
 using VibPortalApi.Data;
@@ -29,6 +30,15 @@ builder.Services.AddSwaggerGen(c =>
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SQLserver")));
+
+// Register the DbContext with the IBM DB2 provider
+builder.Services.AddDbContext<DB2Context>(options =>
+    options.UseDb2(builder.Configuration.GetConnectionString("DB2Connection"), db2Options =>
+    {
+        // Optionally, configure provider-specific settings here.
+        // For example: db2Options.SetServerInfo(IBM.EntityFrameworkCore.Db2.Db2ServerType.LUW);
+    }));
+
 builder.Services.AddScoped<IManageMsdsService, ManageMsdsService>();
 builder.Services.AddScoped<PdfExtractor_Akzo>();
 builder.Services.AddScoped<PdfExtractor_Basf>();
