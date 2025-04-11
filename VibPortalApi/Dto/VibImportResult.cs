@@ -6,5 +6,6 @@
         public string? ExtractedText { get; set; }
         public string? ErrorMessage { get; set; }
         public int? VibId { get; set; }
+
     }
 }

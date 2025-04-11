@@ -36,14 +36,14 @@ namespace VibPortalApi.Services
             return true;
         }
 
-        public async Task<PagedResult<VibImport>> GetPagedAsync(int page, int pageSize, string sortColumn, string sortDirection, string? filter, string? status)
+        public async Task<VibPagedResult<VibImport>> GetPagedAsync(PagedRequest request)
         {
             var query = _context.VibImport.AsNoTracking();
 
-            // 🔍 Apply filtering
-            if (!string.IsNullOrWhiteSpace(filter))
+            // 🔍 Multi-field filter logic (case-insensitive)
+            if (!string.IsNullOrWhiteSpace(request.Filter))
             {
-                filter = filter.Trim().ToLower();
+                var filter = request.Filter.Trim().ToLower();
 
                 query = query.Where(v =>
                     v.Suppl_Nr.ToLower().Contains(filter) ||
@@ -51,28 +51,33 @@ namespace VibPortalApi.Services
                     v.H_Nr.ToLower().Contains(filter) ||
                     v.Eg_Nr.ToLower().Contains(filter));
             }
-            if (!string.IsNullOrWhiteSpace(status))
+
+            if (!string.IsNullOrWhiteSpace(request.Status))
             {
-                query = query.Where(v => v.Status.ToLower() == status.ToLower());
+                var status = request.Status.Trim().ToLower();
+                query = query.Where(v => v.Status.ToLower() == status);
             }
-            // 🧠 Apply dynamic sorting
-            if (!string.IsNullOrWhiteSpace(sortColumn))
+
+            // 📊 Dynamic sort using Linq.Dynamic.Core
+            if (!string.IsNullOrWhiteSpace(request.SortColumn))
             {
-                var orderBy = $"{sortColumn} {sortDirection}";
-                query = query.OrderBy(orderBy); // using System.Linq.Dynamic.Core
+                var orderBy = $"{request.SortColumn} {request.SortDirection}";
+                query = query.OrderBy(orderBy);
             }
 
             var totalCount = await query.CountAsync();
 
             var data = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToListAsync();
 
-            return new PagedResult<VibImport>
+            return new VibPagedResult<VibImport>
             {
-                TotalCount = totalCount,
-                Data = data
+                TotalRecords = totalCount,
+                Records = data,
+                Page = request.Page,
+                PageSize = request.PageSize
             };
         }
 

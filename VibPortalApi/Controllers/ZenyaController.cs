@@ -14,16 +14,6 @@ namespace VibPortalApi.Controllers
             _zenyaService = zenyaService;
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery] string query)
-        {
-            var result = await _zenyaService.GetSearchSuggestionAsync(query);
-            if (string.IsNullOrEmpty(result))
-                return NotFound("Geen suggestie gevonden");
-
-            return Ok(result);
-        }
-
         [HttpGet("token")]
         public async Task<IActionResult> GetToken()
         {

@@ -45,16 +45,11 @@ namespace VibPortalApi.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        public async Task<ActionResult<PagedResult<VibImport>>> GetPaged(
-            [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 25,
-            [FromQuery] string sortColumn = "Entry_Date",
-            [FromQuery] string sortDirection = "desc",
-            [FromQuery] string? filter = null,
-            [FromQuery] string? status = null)
+
+        [HttpPost("paged")]
+        public async Task<ActionResult<VibPagedResult<VibImport>>> GetPaged([FromBody] PagedRequest request)
         {
-            var result = await _manageMsdsService.GetPagedAsync(page, pageSize, sortColumn, sortDirection, filter, status);
+            var result = await _manageMsdsService.GetPagedAsync(request);
             return Ok(result);
         }
 

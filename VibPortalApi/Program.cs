@@ -2,6 +2,7 @@ using IBM.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using VibPortalApi;
 using VibPortalApi.Data;
+using VibPortalApi.Profiles;
 using VibPortalApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +40,7 @@ builder.Services.AddDbContext<DB2Context>(options =>
         // For example: db2Options.SetServerInfo(IBM.EntityFrameworkCore.Db2.Db2ServerType.LUW);
     }));
 
+builder.Services.AddAutoMapper(typeof(EuravibProfile));
 builder.Services.AddScoped<IManageMsdsService, ManageMsdsService>();
 builder.Services.AddScoped<PdfExtractor_Akzo>();
 builder.Services.AddScoped<PdfExtractor_Basf>();
@@ -50,6 +52,7 @@ builder.Services.AddScoped<PdfExtractor_Ppg>();
 builder.Services.AddScoped<PdfExtractor_Valspar>();
 builder.Services.AddScoped<IPdfExtractorFactory, PdfExtractorFactory>();
 builder.Services.AddScoped<IVibImportService, VibImportService>();
+builder.Services.AddScoped<IEuravibService, EuravibService>();
 
 //builder.Services.AddHttpClient<IZenyaService, ZenyaService>();
 HttpClientHandler insecureHandler = new HttpClientHandler();

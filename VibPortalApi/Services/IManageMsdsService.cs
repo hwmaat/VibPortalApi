@@ -7,7 +7,7 @@ namespace VibPortalApi.Services
         Task<List<VibImport>> GetAllAsync();
         Task<VibImport?> GetByIdAsync(int id);
         Task<bool> UpdateAsync(VibImport record);
-        Task<PagedResult<VibImport>> GetPagedAsync(int page, int pageSize, string sortColumn, string sortDirection, string? filter, string? status);
+        Task<VibPagedResult<VibImport>> GetPagedAsync(PagedRequest request);
         (string SupplierCode, string Dimset, string Recipe) ParseFileName(string fileName);
 
     }
