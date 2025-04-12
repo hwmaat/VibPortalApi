@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using AutoMapper;
+
 using Microsoft.EntityFrameworkCore;
 using VibPortalApi.Data;
 using VibPortalApi.Models;
 using VibPortalApi.Models.DB2Models;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace VibPortalApi.Services
 {
@@ -15,11 +16,11 @@ namespace VibPortalApi.Services
     {
         private readonly DB2Context _context;
 
-        private readonly IMapper _mapper;
-        public EuravibService(DB2Context context, IMapper mapper)
+
+        public EuravibService(DB2Context context)
         {
             _context = context;
-            _mapper = mapper;
+
         }
 
         public async Task<List<EuravibImport>> GetAllAsync()
@@ -27,24 +28,16 @@ namespace VibPortalApi.Services
             return await _context.EuravibImport.ToListAsync();
         }
 
-        public async Task<EuravibImport?> GetByIdAsync(string supplNr, DateTime revDate, string dimset)
+        public async Task<EuravibImport?> GetByIdAsync(int id)
         {
-            return await _context.EuravibImport
-                .FirstOrDefaultAsync(x =>
-                    x.Suppl_Nr == supplNr &&
-                    x.Rev_Date == revDate &&
-                    x.Dimset == dimset);
+            return await _context.EuravibImport.FindAsync(id);
         }
 
-        public async Task<bool> UpdateAsync(EuravibImport record)
+        public async Task<bool> UpdateAsync(int id, EuravibImport record)
         {
-            var existing = await _context.EuravibImport
-                .FirstOrDefaultAsync(x =>
-                    x.Suppl_Nr == record.Suppl_Nr &&
-                    x.Rev_Date == record.Rev_Date &&
-                    x.Dimset == record.Dimset);
-
-            if (existing == null) return false;
+            var existing = await _context.EuravibImport.FindAsync(id);
+            if (existing == null)
+                return false;
 
             _context.Entry(existing).CurrentValues.SetValues(record);
             await _context.SaveChangesAsync();
@@ -109,12 +102,38 @@ namespace VibPortalApi.Services
         {
             try
             {
-                var totalCount = await _context.EuravibImport.CountAsync(); // Optional: apply same filter if you want filtered count
+                var query = _context.EuravibImport.AsQueryable();
 
-                var raw = await GetPagedWithRowNumberAsync(request); // Returns List<EuravibImportDto>
+                if (!string.IsNullOrWhiteSpace(request.Filter))
+                {
+                    var filter = request.Filter.ToLower();
+                    query = query.Where(e =>
+                        (e.Suppl_Nr ?? "").ToLower().Contains(filter) ||
+                        (e.Dimset ?? "").ToLower().Contains(filter) ||
+                        (e.H_Nr ?? "").ToLower().Contains(filter) ||
+                        (e.Eg_Nr ?? "").ToLower().Contains(filter));
+                }
 
-                var data = _mapper.Map<List<EuravibImport>>(raw); // Map to real model
 
+                var totalCount = await query.CountAsync();
+
+                // Validate sort column
+                var allowedColumns = new HashSet<string>
+        {
+            "suppl_Nr", "dimset", "rev_Date", "entry_Date", "status"
+        };
+
+                var sortColumn = allowedColumns.Contains(request.SortColumn) ? request.SortColumn : "entry_Date";
+                var sortDirection = request.SortDirection?.ToLower() == "desc";
+
+                query = query.OrderBy($"{sortColumn} {(sortDirection ? "descending" : "ascending")}");
+
+                var dataSql = query
+                    .Skip((request.Page - 1) * request.PageSize)
+                    .Take(request.PageSize);
+                    
+
+                var data = await dataSql.ToListAsync();
                 return new VibPagedResult<EuravibImport>
                 {
                     Records = data,
@@ -139,116 +158,42 @@ namespace VibPortalApi.Services
         }
 
 
-        private async Task<List<EuravibImportDto>> GetPagedWithRowNumberAsync(PagedRequest request)
+
+        private async Task<List<EuravibImport>> GetPagedWithRowNumberAsync(PagedRequest request)
         {
+            var query = _context.EuravibImport.AsQueryable();
+
+            // Optional filtering
+            if (!string.IsNullOrWhiteSpace(request.Filter))
+            {
+                var filter = request.Filter.ToLower();
+                query = query.Where(e =>
+                    (e.Suppl_Nr ?? "").ToLower().Contains(filter) ||
+                    (e.Dimset ?? "").ToLower().Contains(filter) ||
+                    (e.H_Nr ?? "").ToLower().Contains(filter) ||
+                    (e.Eg_Nr ?? "").ToLower().Contains(filter));
+            }
+
+
+            // Validate sort column
             var allowedColumns = new HashSet<string>
     {
         "suppl_Nr", "dimset", "rev_Date", "entry_Date", "status"
-        // Add more allowed columns if needed
     };
 
             var sortColumn = allowedColumns.Contains(request.SortColumn) ? request.SortColumn : "entry_Date";
-            var sortDirection = request.SortDirection.ToLower() == "desc" ? "DESC" : "ASC";
+            var sortDirection = request.SortDirection?.ToLower() == "desc";
 
-            var startRow = (request.Page - 1) * request.PageSize + 1;
-            var endRow = request.Page * request.PageSize;
+            // Sort dynamically
+            query = query.OrderBy($"{sortColumn} {(sortDirection ? "descending" : "ascending")}");
 
-            var filterClause = "";
-            var filterParams = new List<object>();
-
-            if (!string.IsNullOrWhiteSpace(request.Filter))
-            {
-                filterClause = @"
-            AND (
-                LOWER(Suppl_Nr) LIKE ? OR
-                LOWER(Dimset) LIKE ? OR
-                LOWER(Status) LIKE ? OR
-                LOWER(H_Nr) LIKE ? OR
-                LOWER(Eg_Nr) LIKE ?
-            )";
-                var filter = $"%{request.Filter.ToLower()}%";
-                filterParams.AddRange(Enumerable.Repeat<object>(filter, 5));
-            }
-
-            if (!string.IsNullOrWhiteSpace(request.Status))
-            {
-                filterClause += " AND LOWER(Status) = ?";
-                filterParams.Add(request.Status.ToLower());
-            }
-
-            var sql = $@"
-    SELECT 
-    RowNum,
-    Suppl_Nr,
-    Rev_Date,
-    Dimset,
-    Entry_Date,
-    Cas_Nr,
-    Cas_Perc,
-    H_Nr,
-    H_Cat,
-    Adr_Un_Nr,
-    Adr_Cargo_Name,
-    Adr_TransportHazard_Class,
-    Adr_Packing_Group,
-    Adr_Environment_Hazards,
-    Adr_ExtraInfo,
-    Imdg_Un_Nr,
-    Imdg_Cargo_Name,
-    Imdg_TransportHazard_Class,
-    Imdg_Packing_Group,
-    Imdg_Environment_Hazards,
-    Imdg_ExtraInfo,
-    ExtraInfo_TunnelCode,
-    FlashPoint,
-    Ems_Fire,
-    Ems_Spillage,
-    ""USER"",
-    Eg_Nr
- FROM (
-        SELECT 
-            ROW_NUMBER() OVER (ORDER BY {sortColumn} {sortDirection}) AS RowNum,
-    e.Suppl_Nr,
-    e.Rev_Date,
-    e.Dimset,
-    e.Entry_Date,
-    e.Cas_Nr,
-    e.Cas_Perc,
-    e.H_Nr,
-    e.H_Cat,
-    e.Adr_Un_Nr,
-    e.Adr_Cargo_Name,
-    e.Adr_TransportHazard_Class,
-    e.Adr_Packing_Group,
-    e.Adr_Environment_Hazards,
-    e.Adr_ExtraInfo,
-    e.Imdg_Un_Nr,
-    e.Imdg_Cargo_Name,
-    e.Imdg_TransportHazard_Class,
-    e.Imdg_Packing_Group,
-    e.Imdg_Environment_Hazards,
-    e.Imdg_ExtraInfo,
-    e.ExtraInfo_TunnelCode,
-    e.FlashPoint,
-    e.Ems_Fire,
-    e.Ems_Spillage,
-    e.""USER"",
-    e.Eg_Nr
-        FROM Euravib.Euravib_Import_Test AS e
-        WHERE 1=1
-        {filterClause}
-    ) AS Paged
-    WHERE RowNum BETWEEN ? AND ?
-";
-
-            // Add paging params last
-            filterParams.Add(startRow);
-            filterParams.Add(endRow);
-
-            return await _context.EuravibImportView
-                .FromSqlRaw(sql, filterParams.ToArray())
+            // Paging
+            return await query
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToListAsync();
         }
+
 
 
     }

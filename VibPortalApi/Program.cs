@@ -2,10 +2,18 @@ using IBM.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using VibPortalApi;
 using VibPortalApi.Data;
-using VibPortalApi.Profiles;
+using VibPortalApi.Models.Settings;
+
 using VibPortalApi.Services;
+using VibPortalApi.Services.Gmail;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<GmailSettings>(
+    builder.Configuration.GetSection("GmailSettings"));
+builder.Services.Configure<AppSettings>(
+    builder.Configuration.GetSection("AppSettings"));
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "CorsPolicy",
@@ -40,7 +48,7 @@ builder.Services.AddDbContext<DB2Context>(options =>
         // For example: db2Options.SetServerInfo(IBM.EntityFrameworkCore.Db2.Db2ServerType.LUW);
     }));
 
-builder.Services.AddAutoMapper(typeof(EuravibProfile));
+
 builder.Services.AddScoped<IManageMsdsService, ManageMsdsService>();
 builder.Services.AddScoped<PdfExtractor_Akzo>();
 builder.Services.AddScoped<PdfExtractor_Basf>();
@@ -53,6 +61,7 @@ builder.Services.AddScoped<PdfExtractor_Valspar>();
 builder.Services.AddScoped<IPdfExtractorFactory, PdfExtractorFactory>();
 builder.Services.AddScoped<IVibImportService, VibImportService>();
 builder.Services.AddScoped<IEuravibService, EuravibService>();
+builder.Services.AddScoped<IGmailService, GmailService>();
 
 //builder.Services.AddHttpClient<IZenyaService, ZenyaService>();
 HttpClientHandler insecureHandler = new HttpClientHandler();

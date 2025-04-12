@@ -9,8 +9,8 @@ namespace VibPortalApi.Services
     public interface IEuravibService
     {
         Task<List<EuravibImport>> GetAllAsync();
-        Task<EuravibImport?> GetByIdAsync(string supplNr, DateTime revDate, string dimset);
-        Task<bool> UpdateAsync(EuravibImport record);
+        Task<EuravibImport?> GetByIdAsync(int id);
+        Task<bool> UpdateAsync(int id, EuravibImport model);
         Task<bool> DeleteAsync(string supplNr, DateTime revDate, string dimset);
         Task<VibPagedResult<EuravibImport>> GetPagedAsync(PagedRequest request);
     }

@@ -26,25 +26,26 @@ namespace VibPortalApi.Controllers
             return Ok(records);
         }
 
-        [HttpGet("{supplNr}/{revDate}/{dimset}")]
-        public async Task<ActionResult<EuravibImport>> GetById(string supplNr, DateTime revDate, string dimset)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var record = await _euravibService.GetByIdAsync(supplNr, revDate, dimset);
-            if (record == null) return NotFound();
-            return Ok(record);
+            var result = await _euravibService.GetByIdAsync(id);
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
         }
 
-        [HttpPut("{supplNr}/{revDate}/{dimset}")]
-        public async Task<IActionResult> Update(string supplNr, DateTime revDate, string dimset, EuravibImport record)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] EuravibImport model)
         {
-            if (record.Suppl_Nr != supplNr || record.Rev_Date != revDate || record.Dimset != dimset)
-                return BadRequest("Composite key mismatch.");
-
-            var updated = await _euravibService.UpdateAsync(record);
-            if (!updated) return NotFound();
+            var updated = await _euravibService.UpdateAsync(id, model);
+            if (!updated)
+                return NotFound();
 
             return NoContent();
         }
+
         [HttpDelete("{supplNr}/{revDate}/{dimset}")]
         public async Task<IActionResult> Delete(string supplNr, DateTime revDate, string dimset)
         {

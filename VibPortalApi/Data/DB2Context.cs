@@ -13,17 +13,16 @@ namespace VibPortalApi.Data
 
         // Define your entity sets (tables) for the DB2 database
         public DbSet<EuravibImport> EuravibImport { get; set; }
-        public DbSet<EuravibImportDto> EuravibImportView { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Map the entity to a specific schema if needed.
             // For example, mapping MyEntity to the DB2ADMIN schema:
             modelBuilder.Entity<EuravibImport>()
                 .ToTable("Euravib_Import_Test", "Euravib")
-                .HasKey(e => new { e.Suppl_Nr, e.Rev_Date, e.Dimset });
+                .HasKey(e => new { e.Id});
             
             
-            modelBuilder.Entity<EuravibImportDto>().HasNoKey().ToView(null);
+
 
             base.OnModelCreating(modelBuilder);
         }
