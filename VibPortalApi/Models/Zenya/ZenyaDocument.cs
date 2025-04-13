@@ -1,4 +1,4 @@
-﻿namespace VibPortalApi.Models
+﻿namespace VibPortalApi.Models.Zenya
 {
     public class ZenyaDocument
     {

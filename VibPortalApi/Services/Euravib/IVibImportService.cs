@@ -2,7 +2,7 @@
 using VibPortalApi.Dtos;
 using VibPortalApi.Models;
 
-namespace VibPortalApi.Services
+namespace VibPortalApi.Services.Euravib
 {
     public interface IVibImportService
     {

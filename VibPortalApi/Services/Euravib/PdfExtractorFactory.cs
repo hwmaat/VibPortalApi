@@ -1,4 +1,4 @@
-﻿namespace VibPortalApi.Services
+﻿namespace VibPortalApi.Services.Euravib
 {
     public class PdfExtractorFactory : IPdfExtractorFactory
     {

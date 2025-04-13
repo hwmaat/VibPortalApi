@@ -1,6 +1,6 @@
-﻿namespace VibPortalApi.Models
+﻿namespace VibPortalApi.Models.Vib
 {
-    public class PagedRequest
+    public class VibPagedRequest
     {
         public int Page { get; set; }
         public int PageSize { get; set; }

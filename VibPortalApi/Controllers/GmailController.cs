@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using VibPortalApi.Models.Gmail;
 using VibPortalApi.Services.Gmail;
 
 namespace VibPortalApi.Controllers;
@@ -26,5 +27,11 @@ public class GmailController : ControllerBase
 
         var result = await _gmailService.GetMessagesPagedAsync(page, pageSize, search, status);
         return Ok(result);
+    }
+    [HttpPost("process-email")]
+    public async Task<IActionResult> ProcessEmail([FromBody] ProcessEmailRequest request)
+    {
+        var result = await _gmailService.ProcessEmailAsync(request.MessageId, request.SupplierCode, request.AttachmentName);
+        return Ok(result); // Always HTTP 200; frontend handles result.Success
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VibPortalApi.Services;
+using VibPortalApi.Services.Zenya;
 
 namespace VibPortalApi.Controllers
 {

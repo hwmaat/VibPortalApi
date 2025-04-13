@@ -3,7 +3,7 @@ using System.Linq.Dynamic.Core;
 using VibPortalApi.Data;
 using VibPortalApi.Dtos;
 using VibPortalApi.Models;
-using VibPortalApi.Services;
+using VibPortalApi.Services.Euravib;
 
 
 public class VibImportService : IVibImportService

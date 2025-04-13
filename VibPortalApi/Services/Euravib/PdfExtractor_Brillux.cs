@@ -1,8 +1,8 @@
-﻿using VibPortalApi.Models;
+﻿using VibPortalApi.Models.Vib;
 
-namespace VibPortalApi.Services
+namespace VibPortalApi.Services.Euravib
 {
-    public class PdfExtractor_Akzo : IPdfExtractorService
+    public class PdfExtractor_Brillux : IPdfExtractorService
     {
         public VibImport ExtractData(string filePath)
         {

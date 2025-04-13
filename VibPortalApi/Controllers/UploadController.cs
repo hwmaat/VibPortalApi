@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.RegularExpressions;
 using VibPortalApi.Dtos;
-using VibPortalApi.Services;
+using VibPortalApi.Services.Euravib;
 
 namespace VibPortalApi.Controllers
 {

@@ -1,11 +1,12 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 using UglyToad.PdfPig;
-using VibPortalApi.Models;
+using VibPortalApi.Models.Vib;
+using static System.Collections.Specialized.BitVector32;
 
-namespace VibPortalApi.Services
+namespace VibPortalApi.Services.Euravib
 {
-    public class PdfExtractor_Gardobond : IPdfExtractorService
+    public class PdfExtractor_Basf : IPdfExtractorService
     {
         public VibImport ExtractData(string filePath)
         {
@@ -61,14 +62,14 @@ namespace VibPortalApi.Services
 
         private string ExtractCasNumbers(string text)
         {
-            var section = ExtractRubriekSection(text, 3);
+            var section = ExtractRubriekSection(text,3);
             var casMatches = Regex.Matches(section, @"\b\d{2,7}-\d{2}-\d\b");
             return string.Join(", ", casMatches);
         }
 
         private string ExtractCasPercentages(string text)
         {
-            var section = ExtractRubriekSection(text, 3);
+            var section = ExtractRubriekSection(text,3);
             var percentMatches = Regex.Matches(section, @">=\s*\d+\s*-\s*<\s*\d+").Cast<Match>();
             return string.Join(", ", percentMatches);
         }

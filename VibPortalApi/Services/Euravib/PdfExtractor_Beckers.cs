@@ -2,10 +2,10 @@
 using System.Text.RegularExpressions;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.Graphics;
-using VibPortalApi.Models;
+using VibPortalApi.Models.Vib;
 using static System.Collections.Specialized.BitVector32;
 
-namespace VibPortalApi.Services
+namespace VibPortalApi.Services.Euravib
 {
     public class PdfExtractor_Beckers : IPdfExtractorService
     {

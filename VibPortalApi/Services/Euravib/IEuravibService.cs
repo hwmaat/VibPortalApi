@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VibPortalApi.Models;
 using VibPortalApi.Models.DB2Models;
+using VibPortalApi.Models.Vib;
 
-namespace VibPortalApi.Services
+namespace VibPortalApi.Services.Euravib
 {
     public interface IEuravibService
     {
@@ -12,6 +12,6 @@ namespace VibPortalApi.Services
         Task<EuravibImport?> GetByIdAsync(int id);
         Task<bool> UpdateAsync(int id, EuravibImport model);
         Task<bool> DeleteAsync(string supplNr, DateTime revDate, string dimset);
-        Task<VibPagedResult<EuravibImport>> GetPagedAsync(PagedRequest request);
+        Task<VibPagedResult<EuravibImport>> GetPagedAsync(VibPagedRequest request);
     }
 }

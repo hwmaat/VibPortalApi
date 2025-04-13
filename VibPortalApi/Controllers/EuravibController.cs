@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using VibPortalApi.Models;
 using VibPortalApi.Models.DB2Models;
-using VibPortalApi.Services;
+using VibPortalApi.Models.Vib;
+using VibPortalApi.Services.Euravib;
 
 namespace VibPortalApi.Controllers
 {
@@ -54,7 +54,7 @@ namespace VibPortalApi.Controllers
             return NoContent();
         }
         [HttpPost("paged")]
-        public async Task<ActionResult<VibPagedResult<EuravibImport>>> GetPaged([FromBody] PagedRequest request)
+        public async Task<ActionResult<VibPagedResult<EuravibImport>>> GetPaged([FromBody] VibPagedRequest request)
         {
             var result = await _euravibService.GetPagedAsync(request);
             return Ok(result);

@@ -3,9 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using VibPortalApi;
 using VibPortalApi.Data;
 using VibPortalApi.Models.Settings;
-
-using VibPortalApi.Services;
+using VibPortalApi.Services.B2B;
+using VibPortalApi.Services.Euravib;
 using VibPortalApi.Services.Gmail;
+using VibPortalApi.Services.Zenya;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +63,8 @@ builder.Services.AddScoped<IPdfExtractorFactory, PdfExtractorFactory>();
 builder.Services.AddScoped<IVibImportService, VibImportService>();
 builder.Services.AddScoped<IEuravibService, EuravibService>();
 builder.Services.AddScoped<IGmailService, GmailService>();
+builder.Services.AddScoped<IB2bPdfExtractorFactory, B2bPdfExtractorFactory>();
+builder.Services.AddScoped<B2bPdfExtractor_Aludium>();
 
 //builder.Services.AddHttpClient<IZenyaService, ZenyaService>();
 HttpClientHandler insecureHandler = new HttpClientHandler();

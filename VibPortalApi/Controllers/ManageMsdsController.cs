@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VibPortalApi.Models;
-using VibPortalApi.Services;
+using VibPortalApi.Models.Vib;
+using VibPortalApi.Services.Euravib;
 
 namespace VibPortalApi.Controllers
 {
@@ -47,7 +47,7 @@ namespace VibPortalApi.Controllers
 
 
         [HttpPost("paged")]
-        public async Task<ActionResult<VibPagedResult<VibImport>>> GetPaged([FromBody] PagedRequest request)
+        public async Task<ActionResult<VibPagedResult<VibImport>>> GetPaged([FromBody] VibPagedRequest request)
         {
             var result = await _manageMsdsService.GetPagedAsync(request);
             return Ok(result);

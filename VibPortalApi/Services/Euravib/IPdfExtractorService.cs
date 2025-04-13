@@ -1,6 +1,6 @@
-﻿using VibPortalApi.Models;
+﻿using VibPortalApi.Models.Vib;
 
-namespace VibPortalApi.Services
+namespace VibPortalApi.Services.Euravib
 {
     public interface IPdfExtractorService
     {

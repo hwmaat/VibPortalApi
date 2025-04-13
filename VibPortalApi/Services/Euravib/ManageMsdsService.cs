@@ -2,9 +2,9 @@
 using System.Linq.Dynamic.Core;
 using System.Text.RegularExpressions;
 using VibPortalApi.Data;
-using VibPortalApi.Models;
+using VibPortalApi.Models.Vib;
 
-namespace VibPortalApi.Services
+namespace VibPortalApi.Services.Euravib
 {
     public class ManageMsdsService:IManageMsdsService
     {
@@ -36,7 +36,7 @@ namespace VibPortalApi.Services
             return true;
         }
 
-        public async Task<VibPagedResult<VibImport>> GetPagedAsync(PagedRequest request)
+        public async Task<VibPagedResult<VibImport>> GetPagedAsync(VibPagedRequest request)
         {
             var query = _context.VibImport.AsNoTracking();
 

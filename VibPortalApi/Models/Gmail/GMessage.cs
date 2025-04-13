@@ -10,7 +10,7 @@ public class GMessage
     public bool IsRead { get; set; }
 
     // New fields
-    public string Status { get; set; } = "unread"; // unread, processed, invalid
+    public string Status { get; set; } = "new"; 
     public int ProcessId { get; set; }
     public string GmailId { get; set; } = string.Empty;
 }

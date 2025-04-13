@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Dynamic.Core;
-using System.Threading.Tasks;
-
+﻿using System.Linq.Dynamic.Core;
 using Microsoft.EntityFrameworkCore;
 using VibPortalApi.Data;
-using VibPortalApi.Models;
 using VibPortalApi.Models.DB2Models;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
+using VibPortalApi.Models.Vib;
 
-namespace VibPortalApi.Services
+/*
+ Manages the table Euravib_Import_Test, later Euravib_Import
+ 
+ */
+namespace VibPortalApi.Services.Euravib
 {
     public class EuravibService : IEuravibService
     {
@@ -98,7 +96,7 @@ namespace VibPortalApi.Services
             return true;
         }
 
-        public async Task<VibPagedResult<EuravibImport>> GetPagedAsync(PagedRequest request)
+        public async Task<VibPagedResult<EuravibImport>> GetPagedAsync(VibPagedRequest request)
         {
             try
             {
@@ -159,7 +157,7 @@ namespace VibPortalApi.Services
 
 
 
-        private async Task<List<EuravibImport>> GetPagedWithRowNumberAsync(PagedRequest request)
+        private async Task<List<EuravibImport>> GetPagedWithRowNumberAsync(VibPagedRequest request)
         {
             var query = _context.EuravibImport.AsQueryable();
 
