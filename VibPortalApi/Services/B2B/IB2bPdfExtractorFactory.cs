@@ -1,4 +1,6 @@
-﻿namespace VibPortalApi.Services.B2B
+﻿using VibPortalApi.Services.B2B.Extractors;
+
+namespace VibPortalApi.Services.B2B
 {
     public interface IB2bPdfExtractorFactory
     {

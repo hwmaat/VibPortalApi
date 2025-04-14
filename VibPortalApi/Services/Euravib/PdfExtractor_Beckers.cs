@@ -24,7 +24,6 @@ namespace VibPortalApi.Services.Euravib
             var vlamPunt = ExtractVlampunt(text);
             var tunnelCode = ExtractTunnelCode(text);
 
-            // https://chatgpt.com/share/67ead8f5-08e0-8002-9470-9b243caa0b53
 
             var result = new VibImport
             {

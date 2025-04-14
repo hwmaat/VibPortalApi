@@ -19,15 +19,19 @@ public class GmailService : IGmailService
     private readonly AppSettings _appSettings;
     private readonly IB2bPdfExtractorFactory _b2bPdfExtractorFactory;
     private readonly AppDbContext _appDbContext;
-    public GmailService(IOptions<GmailSettings> settings, IOptions<AppSettings> appSettings, IB2bPdfExtractorFactory b2bPdfExtractorFactory, AppDbContext appDbContext)
+    private readonly IB2BImportOc _b2bImportOc;
+
+    public GmailService(IOptions<GmailSettings> settings, IOptions<AppSettings> appSettings, 
+        IB2bPdfExtractorFactory b2bPdfExtractorFactory, AppDbContext appDbContext, IB2BImportOc b2bImportOc)
     {
         _settings = settings.Value;
         _appSettings = appSettings.Value;
         _b2bPdfExtractorFactory = b2bPdfExtractorFactory;
         _appDbContext = appDbContext;
+        _b2bImportOc = b2bImportOc;
     }
 
-    public async Task<B2BProcessResult> ProcessEmailAsync(string gmailId, string supplierCode, string attachmentName)
+    public async Task<B2BProcessResult> ProcessB2BEmailAsync(string gmailId, string supplierCode, string attachmentName)
     {
         var result = new B2BProcessResult { GmailId = gmailId };
 
@@ -78,41 +82,17 @@ public class GmailService : IGmailService
 
 
             //----------------------------------------------------------------
-            Directory.CreateDirectory(b2bPath);
-            var fullPath = Path.Combine(b2bPath, attachmentName);
+            using var memory = new MemoryStream();
+            await part.Content.DecodeToAsync(memory);
+            memory.Position = 0;
 
-            using (var stream = File.Create(fullPath))
-            {
-                await part.Content.DecodeToAsync(stream);
-            }
+            var b2bResult = await _b2bImportOc.B2BProcessOcAsync(memory, gmailId, attachmentName, supplierCode);
 
-            var extractor = _b2bPdfExtractorFactory.GetExtractor(fullPath, supplierCode);
-            var text = await extractor.ExtractTextAsync(fullPath);
-
-            // Check if entry already exists for this attachment
-            var existing = await _appDbContext.B2BSupplierOcs
-                .FirstOrDefaultAsync(x => x.AttachtmentName == attachmentName);
-
-            if (existing != null)
-            {
-                existing.GmailId = gmailId;
-                existing.Status = "seen";
-            }
-            else
-            {
-                _appDbContext.B2BSupplierOcs.Add(new B2BSupplierOc
-                {
-                    GmailId = gmailId,
-                    AttachtmentName = attachmentName,
-                    Status = "seen"
-                });
-            }
-
-            await _appDbContext.SaveChangesAsync();
+            result.Success = b2bResult.Success;
+            result.Status = b2bResult.Status;
+            result.ErrorMessage = b2bResult.ErrorMessage;
             //----------------------------------------------------------------
 
-            result.Success = true;
-            result.Status = !string.IsNullOrWhiteSpace(text) ? "seen" : "no-data";
             return result;
         }
         catch (Exception ex)

@@ -1,4 +1,5 @@
 ﻿using System;
+using VibPortalApi.Services.B2B.Extractors;
 
 namespace VibPortalApi.Services.B2B
 {

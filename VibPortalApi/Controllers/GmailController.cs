@@ -28,10 +28,10 @@ public class GmailController : ControllerBase
         var result = await _gmailService.GetMessagesPagedAsync(page, pageSize, search, status);
         return Ok(result);
     }
-    [HttpPost("process-email")]
-    public async Task<IActionResult> ProcessEmail([FromBody] ProcessEmailRequest request)
+    [HttpPost("process-b2bemail")]
+    public async Task<IActionResult> ProcessB2BEmail([FromBody] ProcessEmailRequest request)
     {
-        var result = await _gmailService.ProcessEmailAsync(request.MessageId, request.SupplierCode, request.AttachmentName);
+        var result = await _gmailService.ProcessB2BEmailAsync(request.MessageId, request.SupplierCode, request.AttachmentName);
         return Ok(result); // Always HTTP 200; frontend handles result.Success
     }
 }

@@ -1,12 +1,16 @@
+using Azure.AI.FormRecognizer.DocumentAnalysis;
+using Azure;
 using IBM.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using VibPortalApi;
 using VibPortalApi.Data;
 using VibPortalApi.Models.Settings;
 using VibPortalApi.Services.B2B;
+using VibPortalApi.Services.B2B.Extractors;
 using VibPortalApi.Services.Euravib;
 using VibPortalApi.Services.Gmail;
 using VibPortalApi.Services.Zenya;
+using VibPortalApi.Services.B2B.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +69,20 @@ builder.Services.AddScoped<IEuravibService, EuravibService>();
 builder.Services.AddScoped<IGmailService, GmailService>();
 builder.Services.AddScoped<IB2bPdfExtractorFactory, B2bPdfExtractorFactory>();
 builder.Services.AddScoped<B2bPdfExtractor_Aludium>();
+
+builder.Services.AddScoped<IB2BFormRecognizerFactory, B2BFormRecognizerFactory>();
+builder.Services.AddScoped<FormRecognizerAludiumMapper>();
+builder.Services.AddScoped<FormRecognizerBeckersMapper>();
+builder.Services.AddScoped<IB2BImportOc, B2BImportOc>();
+
+builder.Services.AddSingleton(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var endpoint = config["AzureFormRecognizer:Endpoint"];
+    var key = config["AzureFormRecognizer:ApiKey"];
+    return new DocumentAnalysisClient(new Uri(endpoint), new AzureKeyCredential(key));
+});
+
 
 //builder.Services.AddHttpClient<IZenyaService, ZenyaService>();
 HttpClientHandler insecureHandler = new HttpClientHandler();
