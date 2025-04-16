@@ -1,6 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.RegularExpressions;
 using VibPortalApi.Dtos;
@@ -40,7 +38,7 @@ namespace VibPortalApi.Controllers
 
             var Suppl_Nr = ParseFileName(request.File.FileName).SupplierCode;
             var supplierName = ResolveSupplierCode(Suppl_Nr);
-            
+
             var result = await _vibImportService.ProcessPdfAsync(filePath, supplierName, Suppl_Nr);
 
             return result.Success ? Ok(result) : BadRequest(result.ErrorMessage);
@@ -159,6 +157,6 @@ namespace VibPortalApi.Controllers
 
             return (supplierCode, dimset, recipe);
         }
-    
-}
+
+    }
 }

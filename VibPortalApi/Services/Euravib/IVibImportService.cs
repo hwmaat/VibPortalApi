@@ -1,6 +1,4 @@
-﻿using Azure.Core;
-using VibPortalApi.Dtos;
-using VibPortalApi.Models;
+﻿using VibPortalApi.Dtos;
 
 namespace VibPortalApi.Services.Euravib
 {

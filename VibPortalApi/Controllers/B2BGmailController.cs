@@ -6,16 +6,16 @@ namespace VibPortalApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class GmailController : ControllerBase
+public class B2BGmailController : ControllerBase
 {
-    private readonly IGmailService _gmailService;
+    private readonly IB2BGmailService _gmailService;
 
-    public GmailController(IGmailService gmailService)
+    public B2BGmailController(IB2BGmailService gmailService)
     {
         _gmailService = gmailService;
     }
 
-    [HttpGet("messages")]
+    [HttpGet("b2bmessages")]
     public async Task<IActionResult> GetMessages(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
@@ -25,7 +25,7 @@ public class GmailController : ControllerBase
         if (page < 1 || pageSize < 1)
             return BadRequest("Page and pageSize must be greater than zero.");
 
-        var result = await _gmailService.GetMessagesPagedAsync(page, pageSize, search, status);
+        var result = await _gmailService.GetB2BMessagesPagedAsync(page, pageSize, search, status);
         return Ok(result);
     }
     [HttpPost("process-b2bemail")]

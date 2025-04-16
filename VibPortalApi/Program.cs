@@ -1,21 +1,19 @@
-using Azure.AI.FormRecognizer.DocumentAnalysis;
 using Azure;
+using Azure.AI.FormRecognizer.DocumentAnalysis;
 using IBM.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using VibPortalApi;
 using VibPortalApi.Data;
 using VibPortalApi.Models.Settings;
 using VibPortalApi.Services.B2B;
-using VibPortalApi.Services.B2B.Extractors;
+using VibPortalApi.Services.B2B.Azure;
 using VibPortalApi.Services.Euravib;
 using VibPortalApi.Services.Gmail;
 using VibPortalApi.Services.Zenya;
-using VibPortalApi.Services.B2B.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<GmailSettings>(
-    builder.Configuration.GetSection("GmailSettings"));
+builder.Services.Configure<B2BGmailSettings>(
+    builder.Configuration.GetSection("B2BGmailSettings"));
 builder.Services.Configure<AppSettings>(
     builder.Configuration.GetSection("AppSettings"));
 
@@ -66,9 +64,8 @@ builder.Services.AddScoped<PdfExtractor_Valspar>();
 builder.Services.AddScoped<IPdfExtractorFactory, PdfExtractorFactory>();
 builder.Services.AddScoped<IVibImportService, VibImportService>();
 builder.Services.AddScoped<IEuravibService, EuravibService>();
-builder.Services.AddScoped<IGmailService, GmailService>();
-builder.Services.AddScoped<IB2bPdfExtractorFactory, B2bPdfExtractorFactory>();
-builder.Services.AddScoped<B2bPdfExtractor_Aludium>();
+builder.Services.AddScoped<IB2BGmailService, B2BGmailService>();
+
 
 builder.Services.AddScoped<IB2BFormRecognizerFactory, B2BFormRecognizerFactory>();
 builder.Services.AddScoped<FormRecognizerAludiumMapper>();

@@ -15,8 +15,8 @@ public static class PdfTextExtractorUtil
             for (int page = 1; page <= pdfDoc.GetNumberOfPages(); page++)
             {
                 var strategy = new LocationTextExtractionStrategy();
-                
-               string pageText = PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(page), strategy);
+
+                string pageText = PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(page), strategy);
                 sb.AppendLine(pageText);
             }
         }

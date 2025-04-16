@@ -1,10 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace VibPortalApi.Models.DB2Models
+﻿namespace VibPortalApi.Models.DB2Models
 {
     public class EuravibImport
     {
-        
+
         public int Id { get; set; }
         public string? Suppl_Nr { get; set; }
         public string? Dimset { get; set; }

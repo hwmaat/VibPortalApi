@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace VibPortalApi.Dtos
+﻿namespace VibPortalApi.Dtos
 {
     public class UploadRequest
     {

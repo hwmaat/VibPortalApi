@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using VibPortalApi.Models.B2B;
+﻿using VibPortalApi.Models.B2B;
 
 namespace VibPortalApi.Services.B2B
 {

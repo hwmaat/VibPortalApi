@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VibPortalApi.Services.B2B;
 using VibPortalApi.Models.B2B;
+using VibPortalApi.Services.B2B;
 
 namespace VibPortalApi.Controllers
 {

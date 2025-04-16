@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using VibPortalApi.Models.DB2Models;
+﻿using VibPortalApi.Models.DB2Models;
 using VibPortalApi.Models.Vib;
 
 namespace VibPortalApi.Services.Euravib

@@ -5,7 +5,6 @@ using MailKit.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using System.Linq;
 using VibPortalApi.Data;
 using VibPortalApi.Models.B2B;
 using VibPortalApi.Models.Gmail;
@@ -13,20 +12,19 @@ using VibPortalApi.Models.Settings;
 using VibPortalApi.Services.B2B;
 using VibPortalApi.Services.Gmail;
 
-public class GmailService : IGmailService
+public class B2BGmailService : IB2BGmailService
 {
-    private readonly GmailSettings _settings;
+    private readonly B2BGmailSettings _settings;
     private readonly AppSettings _appSettings;
-    private readonly IB2bPdfExtractorFactory _b2bPdfExtractorFactory;
+
     private readonly AppDbContext _appDbContext;
     private readonly IB2BImportOc _b2bImportOc;
 
-    public GmailService(IOptions<GmailSettings> settings, IOptions<AppSettings> appSettings, 
-        IB2bPdfExtractorFactory b2bPdfExtractorFactory, AppDbContext appDbContext, IB2BImportOc b2bImportOc)
+    public B2BGmailService(IOptions<B2BGmailSettings> settings, IOptions<AppSettings> appSettings,
+         AppDbContext appDbContext, IB2BImportOc b2bImportOc)
     {
         _settings = settings.Value;
         _appSettings = appSettings.Value;
-        _b2bPdfExtractorFactory = b2bPdfExtractorFactory;
         _appDbContext = appDbContext;
         _b2bImportOc = b2bImportOc;
     }
@@ -105,9 +103,9 @@ public class GmailService : IGmailService
     }
 
 
-    public async Task<MailPagedResult<GMessage>> GetMessagesPagedAsync(int page, int pageSize, string? search, string? status)
+    public async Task<MailPagedResult<B2BGMessage>> GetB2BMessagesPagedAsync(int page, int pageSize, string? search, string? status)
     {
-        var result = new MailPagedResult<GMessage>
+        var result = new MailPagedResult<B2BGMessage>
         {
             PageNumber = page,
             PageSize = pageSize,
@@ -148,7 +146,7 @@ public class GmailService : IGmailService
                     var messageId = summary.Envelope?.MessageId;
                     var fallbackUid = summary.UniqueId.Id.ToString();
 
-                    var baseMessage = new GMessage
+                    var baseMessage = new B2BGMessage
                     {
                         Date = summary.InternalDate?.DateTime,
                         From = summary.Envelope?.From?.Mailboxes?.FirstOrDefault()?.Address ?? string.Empty,
@@ -170,7 +168,7 @@ public class GmailService : IGmailService
                     }
 
                     // One row per attachment
-                    return attachmentList.Select(name => new GMessage
+                    return attachmentList.Select(name => new B2BGMessage
                     {
                         Date = baseMessage.Date,
                         From = baseMessage.From,
@@ -218,7 +216,7 @@ public class GmailService : IGmailService
                     var match = existingRecords.FirstOrDefault(r =>
                         r.AttachtmentName == msg.Attachments && r.GmailId == msg.GmailId);
                     //if a record is there: seen, otherwise 'todo'
-                    msg.Status = match?.Status?? "new";
+                    msg.Status = match?.Status ?? "new";
                 }
             }
 

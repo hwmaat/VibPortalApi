@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace VibPortalApi.Models.B2B
+﻿namespace VibPortalApi.Models.B2B
 {
     public class B2BParsedOcData
     {

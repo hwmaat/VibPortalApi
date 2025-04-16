@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using VibPortalApi.Services.Azure;
+using VibPortalApi.Services.B2B.Azure;
 
 namespace VibPortalApi.Controllers.Dev
 {

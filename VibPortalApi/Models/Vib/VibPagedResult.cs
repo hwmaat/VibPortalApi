@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace VibPortalApi.Models.Vib
+﻿namespace VibPortalApi.Models.Vib
 {
     public class VibPagedResult<T>
     {

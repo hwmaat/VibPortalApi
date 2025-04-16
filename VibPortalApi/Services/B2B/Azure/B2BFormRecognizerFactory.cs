@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace VibPortalApi.Services.B2B.Azure
+﻿namespace VibPortalApi.Services.B2B.Azure
 {
 
 

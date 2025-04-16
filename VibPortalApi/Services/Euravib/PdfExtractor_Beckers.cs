@@ -1,9 +1,5 @@
-﻿using System.Globalization;
-using System.Text.RegularExpressions;
-using UglyToad.PdfPig;
-using UglyToad.PdfPig.Graphics;
+﻿using System.Text.RegularExpressions;
 using VibPortalApi.Models.Vib;
-using static System.Collections.Specialized.BitVector32;
 
 namespace VibPortalApi.Services.Euravib
 {
@@ -16,7 +12,7 @@ namespace VibPortalApi.Services.Euravib
 
             var text = PdfTextExtractorUtil.ExtractTextFromPdf(filePath);
 
-            var (casNumbers, casPercentages) = ExtractCasData(text );
+            var (casNumbers, casPercentages) = ExtractCasData(text);
             var (hNumbers, hCats) = ExtractHazardCodesAndCategories(text);
             var (unNummer, ladingNaam, gevarenKlasse, verpakkingsGroep, milieugevaren) = ExtractTransportInfo(text);
 

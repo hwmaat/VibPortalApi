@@ -1,5 +1,5 @@
-﻿using System.Linq.Dynamic.Core;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
 using VibPortalApi.Data;
 using VibPortalApi.Models.DB2Models;
 using VibPortalApi.Models.Vib;
@@ -12,78 +12,39 @@ namespace VibPortalApi.Services.Euravib
 {
     public class EuravibService : IEuravibService
     {
-        private readonly DB2Context _context;
+        private readonly DB2Context _db2Context;
 
 
-        public EuravibService(DB2Context context)
+        public EuravibService(DB2Context db2Context)
         {
-            _context = context;
+            _db2Context = db2Context;
 
         }
 
         public async Task<List<EuravibImport>> GetAllAsync()
         {
-            return await _context.EuravibImport.ToListAsync();
+            return await _db2Context.EuravibImport.ToListAsync();
         }
 
         public async Task<EuravibImport?> GetByIdAsync(int id)
         {
-            return await _context.EuravibImport.FindAsync(id);
+            return await _db2Context.EuravibImport.FindAsync(id);
         }
 
         public async Task<bool> UpdateAsync(int id, EuravibImport record)
         {
-            var existing = await _context.EuravibImport.FindAsync(id);
+            var existing = await _db2Context.EuravibImport.FindAsync(id);
             if (existing == null)
                 return false;
 
-            _context.Entry(existing).CurrentValues.SetValues(record);
-            await _context.SaveChangesAsync();
+            _db2Context.Entry(existing).CurrentValues.SetValues(record);
+            await _db2Context.SaveChangesAsync();
             return true;
         }
 
-        //public async Task<VibPagedResult<EuravibImport>> GetPagedAsync(PagedRequest request)
-        //{
-        //    var query = _context.EuravibImport.AsQueryable();
-
-        //    // Filtering
-        //    if (!string.IsNullOrWhiteSpace(request.Filter))
-        //    {
-        //        var filter = request.Filter.Trim().ToLower();
-
-        //        query = query.Where(v =>
-        //            v.Suppl_Nr.ToLower().Contains(filter) ||
-        //            v.Dimset.ToLower().Contains(filter) ||
-        //            v.H_Nr.ToLower().Contains(filter) ||
-        //            v.Eg_Nr.ToLower().Contains(filter));
-        //    }
-
-
-        //    // Sorting
-        //    if (!string.IsNullOrEmpty(request.SortColumn))
-        //    {
-        //        var sortString = $"{request.SortColumn} {request.SortDirection}";
-        //        query = query.OrderBy(sortString);
-        //    }
-
-        //    // Paging
-        //    var totalRecords = await query.CountAsync();
-        //    var recordsSql = query
-        //        .Skip((request.Page - 1) * request.PageSize)
-        //        .Take(request.PageSize);
-        //    var records = await recordsSql.ToListAsync();
-
-        //    return new VibPagedResult<EuravibImport>
-        //    {
-        //        Records = records,
-        //        TotalRecords = totalRecords,
-        //        Page = request.Page,
-        //        PageSize = request.PageSize
-        //    };
-        //}
         public async Task<bool> DeleteAsync(string supplNr, DateTime revDate, string dimset)
         {
-            var existing = await _context.EuravibImport
+            var existing = await _db2Context.EuravibImport
                 .FirstOrDefaultAsync(e =>
                     e.Suppl_Nr == supplNr &&
                     e.Rev_Date == revDate &&
@@ -91,8 +52,8 @@ namespace VibPortalApi.Services.Euravib
 
             if (existing == null) return false;
 
-            _context.EuravibImport.Remove(existing);
-            await _context.SaveChangesAsync();
+            _db2Context.EuravibImport.Remove(existing);
+            await _db2Context.SaveChangesAsync();
             return true;
         }
 
@@ -100,7 +61,7 @@ namespace VibPortalApi.Services.Euravib
         {
             try
             {
-                var query = _context.EuravibImport.AsQueryable();
+                var query = _db2Context.EuravibImport.AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(request.Filter))
                 {
@@ -129,7 +90,7 @@ namespace VibPortalApi.Services.Euravib
                 var dataSql = query
                     .Skip((request.Page - 1) * request.PageSize)
                     .Take(request.PageSize);
-                    
+
 
                 var data = await dataSql.ToListAsync();
                 return new VibPagedResult<EuravibImport>
@@ -156,41 +117,6 @@ namespace VibPortalApi.Services.Euravib
         }
 
 
-
-        private async Task<List<EuravibImport>> GetPagedWithRowNumberAsync(VibPagedRequest request)
-        {
-            var query = _context.EuravibImport.AsQueryable();
-
-            // Optional filtering
-            if (!string.IsNullOrWhiteSpace(request.Filter))
-            {
-                var filter = request.Filter.ToLower();
-                query = query.Where(e =>
-                    (e.Suppl_Nr ?? "").ToLower().Contains(filter) ||
-                    (e.Dimset ?? "").ToLower().Contains(filter) ||
-                    (e.H_Nr ?? "").ToLower().Contains(filter) ||
-                    (e.Eg_Nr ?? "").ToLower().Contains(filter));
-            }
-
-
-            // Validate sort column
-            var allowedColumns = new HashSet<string>
-    {
-        "suppl_Nr", "dimset", "rev_Date", "entry_Date", "status"
-    };
-
-            var sortColumn = allowedColumns.Contains(request.SortColumn) ? request.SortColumn : "entry_Date";
-            var sortDirection = request.SortDirection?.ToLower() == "desc";
-
-            // Sort dynamically
-            query = query.OrderBy($"{sortColumn} {(sortDirection ? "descending" : "ascending")}");
-
-            // Paging
-            return await query
-                .Skip((request.Page - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToListAsync();
-        }
 
 
 

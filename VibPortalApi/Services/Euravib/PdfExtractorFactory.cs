@@ -9,7 +9,7 @@
             _provider = provider;
         }
 
-        public IPdfExtractorService GetExtractor(string filePath, string supplierCode )
+        public IPdfExtractorService GetExtractor(string filePath, string supplierCode)
         {
             return supplierCode.ToLowerInvariant() switch
             {

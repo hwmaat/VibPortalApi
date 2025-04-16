@@ -1,8 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Dynamic.Core;
-using VibPortalApi.Data;
+﻿using VibPortalApi.Data;
 using VibPortalApi.Dtos;
-using VibPortalApi.Models;
 using VibPortalApi.Services.Euravib;
 
 
@@ -18,7 +15,7 @@ public class VibImportService : IVibImportService
     }
 
     // === PDF Upload & Processing ===
-    public async Task<VibImportResult> ProcessPdfAsync(string filePath, string? supplierCode, string?  Suppl_Nr)
+    public async Task<VibImportResult> ProcessPdfAsync(string filePath, string? supplierCode, string? Suppl_Nr)
     {
         var result = new VibImportResult();
 
@@ -41,14 +38,14 @@ public class VibImportService : IVibImportService
             if (!string.IsNullOrWhiteSpace(Suppl_Nr))
                 vib.Suppl_Nr = Suppl_Nr;
 
-                vib.Dimset = "test";
+            vib.Dimset = "test";
 
             _context.VibImport.Add(vib);
             await _context.SaveChangesAsync();
 
             result.Success = true;
             result.ExtractedText = ""; // Optional: keep empty for now
-            result.VibId = vib.Id;  
+            result.VibId = vib.Id;
         }
         catch (Exception ex)
         {

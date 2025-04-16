@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using VibPortalApi.Models.DB2Models;
 using VibPortalApi.Models.Vib;
 using VibPortalApi.Services.Euravib;
@@ -10,11 +7,11 @@ namespace VibPortalApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EuravibController : ControllerBase
+    public class Db2EuravibController : ControllerBase
     {
         private readonly IEuravibService _euravibService;
 
-        public EuravibController(IEuravibService euravibService)
+        public Db2EuravibController(IEuravibService euravibService)
         {
             _euravibService = euravibService;
         }

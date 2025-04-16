@@ -1,9 +1,8 @@
-﻿using UglyToad.PdfPig;
-using UglyToad.PdfPig.Content;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text.RegularExpressions;
-using VibPortalApi.Services.Euravib;
+using UglyToad.PdfPig;
 using VibPortalApi.Models.Vib;
+using VibPortalApi.Services.Euravib;
 
 public class PdfExtractorService : IPdfExtractorService
 {

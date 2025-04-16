@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Options;
-using VibPortalApi.Models.B2B;
-using Microsoft.EntityFrameworkCore;
-using VibPortalApi.Data;
-using VibPortalApi.Models.Settings;
+﻿using Azure;
 using Azure.AI.FormRecognizer.DocumentAnalysis;
-using Azure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using VibPortalApi.Data;
+using VibPortalApi.Models.B2B;
+using VibPortalApi.Models.Settings;
 using VibPortalApi.Services.B2B.Azure;
-using System.IO;
 
 namespace VibPortalApi.Services.B2B
 {

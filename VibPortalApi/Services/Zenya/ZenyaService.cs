@@ -1,7 +1,6 @@
 ﻿using System.Net.Http.Headers;
-using Microsoft.Extensions.Configuration;
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
 using VibPortalApi.Models.Zenya;
 
 namespace VibPortalApi.Services.Zenya

@@ -6,39 +6,39 @@ using VibPortalApi.Models.Vib;
 
 namespace VibPortalApi.Services.Euravib
 {
-    public class ManageMsdsService:IManageMsdsService
+    public class ManageMsdsService : IManageMsdsService
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext _msSqlContext;
 
-        public ManageMsdsService(AppDbContext context)
+        public ManageMsdsService(AppDbContext msSqlContext)
         {
-            _context = context;
+            _msSqlContext = msSqlContext;
 
         }
         public async Task<List<VibImport>> GetAllAsync()
         {
-            return await _context.VibImport.OrderByDescending(x => x.Entry_Date).ToListAsync();
+            return await _msSqlContext.VibImport.OrderByDescending(x => x.Entry_Date).ToListAsync();
         }
 
         public async Task<VibImport?> GetByIdAsync(int id)
         {
-            return await _context.VibImport.FirstOrDefaultAsync(v => v.Id == id);
+            return await _msSqlContext.VibImport.FirstOrDefaultAsync(v => v.Id == id);
         }
 
         public async Task<bool> UpdateAsync(VibImport record)
         {
-            var existing = await _context.VibImport.FindAsync(record.Id);
+            var existing = await _msSqlContext.VibImport.FindAsync(record.Id);
             if (existing == null)
                 return false;
 
-            _context.Entry(existing).CurrentValues.SetValues(record);
-            await _context.SaveChangesAsync();
+            _msSqlContext.Entry(existing).CurrentValues.SetValues(record);
+            await _msSqlContext.SaveChangesAsync();
             return true;
         }
 
         public async Task<VibPagedResult<VibImport>> GetPagedAsync(VibPagedRequest request)
         {
-            var query = _context.VibImport.AsNoTracking();
+            var query = _msSqlContext.VibImport.AsNoTracking();
 
             // 🔍 Multi-field filter logic (case-insensitive)
             if (!string.IsNullOrWhiteSpace(request.Filter))
